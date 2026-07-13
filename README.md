@@ -1,6 +1,4 @@
-# TryHackMe Walkthrough — SSRF (Server-Side Request Forgery)
-
-**Lab:** [https://tryhackme.com/room/ssrfqi](https://tryhackme.com/room/ssrfqi)
+# SSRF (Server-Side Request Forgery)
 
 In this room we explore **Server-Side Request Forgery (SSRF)** — a vulnerability where an attacker tricks a server into making HTTP requests on their behalf. Since the request originates from the **server itself**, it can access resources that the attacker normally cannot, such as **internal APIs, localhost services, or cloud metadata endpoints**.
 
@@ -67,7 +65,7 @@ Each example highlights a different level of attacker control.
 In the first scenario, the application expects a request like:
 
 ```
-https://website.thm/fetch?url=https://api.website.thm/data
+https://website.xyz/fetch?url=https://api.website.xyz/data
 ```
 
 The server retrieves the resource specified in the `url` parameter.
@@ -159,7 +157,7 @@ These headers can reveal sensitive credentials.
 The task is to modify the request so the server retrieves data from:
 
 ```
-https://server.website.thm/flag?id=9
+https://server.website.xyz/flag?id=9
 ```
 
 Once the request is properly crafted, the internal server returns the flag.
@@ -167,7 +165,7 @@ Once the request is properly crafted, the internal server returns the flag.
 **Flag**
 
 ```
-THM{SSRF_MASTER}
+{SSRF_MASTER}
 ```
 
 ![SSRF Example Flag](SSRF/6.png)
@@ -207,13 +205,6 @@ These inputs often control **backend HTTP requests**, which makes them prime SSR
 ---
 
 ### Identifying the Vulnerable URL
-
-Given the options:
-
-* [https://website.thm/index.php](https://website.thm/index.php)
-* [https://website.thm/list-products.php?categoryId=5325](https://website.thm/list-products.php?categoryId=5325)
-* [https://website.thm/fetch-file.php?fname=242533.pdf&srv=filestorage.cloud.thm&port=8001](https://website.thm/fetch-file.php?fname=242533.pdf&srv=filestorage.cloud.thm&port=8001)
-* [https://website.thm/buy-item.php?itemId=213&price=100&q=2](https://website.thm/buy-item.php?itemId=213&price=100&q=2)
 
 The third option is most suspicious because it allows control over:
 
@@ -283,16 +274,16 @@ Allow lists only permit requests matching specific patterns.
 Example rule:
 
 ```
-URL must start with https://website.thm
+URL must start with https://website.xyz
 ```
 
 An attacker can bypass this by crafting a malicious domain such as:
 
 ```
-https://website.thm.attacker-domain.com
+https://website.xyz.attacker-domain.com
 ```
 
-Since the string still begins with `website.thm`, the validation passes.
+Since the string still begins with `website.xyz`, the validation passes.
 
 ---
 
@@ -303,13 +294,13 @@ Another useful trick is abusing **open redirect endpoints**.
 Example endpoint:
 
 ```
-https://website.thm/link?url=https://tryhackme.com
+https://website.xyz/link?url=https://xyz.com
 ```
 
 Attackers can change the redirect target:
 
 ```
-https://website.thm/link?url=https://attacker.com
+https://website.xyz/link?url=https://attacker.com
 ```
 
 The server first validates the URL, then redirects internally to the attacker-controlled destination.
@@ -442,7 +433,7 @@ After decoding, the flag appears.
 # Final Flag
 
 ```
-THM{YOU_WORKED_OUT_THE_SSRF}
+{YOU_WORKED_OUT_THE_SSRF}
 ```
 
 ![Final Flag](SSRF/13.png)
